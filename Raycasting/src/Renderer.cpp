@@ -69,6 +69,14 @@ void Renderer::update() {
 			position.x += 5;
 			break;
 		}
+		if (event.key.keysym.sym == SDLK_a) {
+			angle += -0.1f;
+			break;
+		}
+		if (event.key.keysym.sym == SDLK_d) {
+			angle += 0.1f;
+			break;
+		}
 	}
 	SDL_RenderFillRect(renderer, &position);
 
@@ -90,5 +98,8 @@ void Renderer::close() {
 }
 
 void Renderer::DrawLaser(SDL_Rect Position) {
-	SDL_RenderDrawLine(renderer, Position.x, position.y, 800, 800);
+	laser.x = cos(angle) * 5;
+	laser.y = sin(angle) * 5;
+	SDL_RenderDrawLine(renderer, Position.x, position.y, position.x + cos(angle)*200, position.y + sin(angle) * 200);
+	
 }

@@ -16,6 +16,8 @@ public:
 	SDL_Rect returnPosition() { return position; };
 	void DrawLaser(SDL_Rect Position);
 private:
+	SDL_Rect laser;
+	float angle{ 0.0f };
 	SDL_Rect position;
 	SDL_Window* window = nullptr;
 	SDL_Renderer* renderer = nullptr;
