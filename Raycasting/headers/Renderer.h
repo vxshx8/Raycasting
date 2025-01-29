@@ -14,9 +14,12 @@ public:
 	void close();
 	void renderPosition(int width, int height);
 	SDL_Rect returnPosition() { return position; };
-	void DrawLaser(SDL_Rect Position);
+	void DrawLaser(SDL_Rect Position, std::vector<std::vector<int>> map);
+	bool colision(int x, int y, std::vector<std::vector<int>> map);
+
 private:
 	SDL_Rect laser;
+	int xlaser, ylazer;
 	float angle{ 0.0f };
 	SDL_Rect position;
 	SDL_Window* window = nullptr;

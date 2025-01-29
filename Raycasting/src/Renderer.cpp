@@ -66,20 +66,21 @@ void Renderer::update() {
 			isrunning = false;
 		}
 		if (event.key.keysym.sym == SDLK_w) {
-			position.x += 5;
-			break;
+			position.x += cos(angle) * 5;
+			position.y += sin(angle) * 5;
+
 		}
 		if (event.key.keysym.sym == SDLK_a) {
-			angle += -0.1f;
-			break;
+			angle -= 0.1f;
+		
 		}
 		if (event.key.keysym.sym == SDLK_d) {
 			angle += 0.1f;
-			break;
+			
 		}
 	}
+	
 	SDL_RenderFillRect(renderer, &position);
-
 }
 
 void Renderer::clear() {
@@ -97,9 +98,36 @@ void Renderer::close() {
 	SDL_DestroyWindow(window);
 }
 
-void Renderer::DrawLaser(SDL_Rect Position) {
-	laser.x = cos(angle) * 5;
-	laser.y = sin(angle) * 5;
-	SDL_RenderDrawLine(renderer, Position.x, position.y, position.x + cos(angle)*200, position.y + sin(angle) * 200);
+void Renderer::DrawLaser(SDL_Rect Position, std::vector<std::vector<int>> map) {
+	float laserX = Position.x;
+	float laserY = Position.y;
+	float stepx = cos(angle) * 0.5;
+	float stepy = sin(angle) * 0.5;
+
+
+
+	while (true) {
+		int gridX = (int)floor(laserX / 80);;
+		int gridy = (int)floor(laserY / 80);
+
+		if (gridX < 0 || gridy < 0 || gridX >= map.size() || gridy >= map[0].size()) {
+			break;
+		}
+	
+
+		if (map[gridy][gridX] == 1) {
+			std::cout << "parede x " << gridX << " pared y" << gridy << "\n";
+			break;
+		}
+
+		laserX += stepx;
+		laserY += stepy;
+	}
+	
+	
+		
+	SDL_RenderDrawLine(renderer, Position.x, position.y,laserX, laserY);
+	
 	
 }
+

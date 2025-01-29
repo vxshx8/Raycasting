@@ -26,7 +26,7 @@ int main(int argc, char* argv[]) {
 		raycaster->drawRectangle(0, 0,800, 800, { 255,255,255,255 },map);
 		
 		raycaster->update();
-		raycaster->DrawLaser(raycaster->returnPosition());
+		raycaster->DrawLaser(raycaster->returnPosition(),map);
 		raycaster->present();
 	}
 	raycaster->close();
