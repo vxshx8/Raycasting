@@ -19,11 +19,11 @@ std::vector<std::vector<int>> map = {
 int main(int argc, char* argv[]) {
 	std::shared_ptr<Renderer> raycaster = std::make_shared<Renderer>();
 	raycaster->createWindow("Raycaster", 1600, 800);
-	raycaster->renderPosition(1600,800);
+	raycaster->renderPositionTop(1600,800);
 
 	while (raycaster->isRunning()) {
 		raycaster->clear();
-		raycaster->drawRectangle(0, 0,800, 800, { 255,255,255,255 },map);
+		raycaster->drawRectangleMap(0, 0,800, 800, { 255,255,255,255 },map);
 		
 		raycaster->update();
 		raycaster->DrawLaser(raycaster->returnPosition(),map);

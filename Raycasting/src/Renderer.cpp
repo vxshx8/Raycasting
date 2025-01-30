@@ -22,7 +22,7 @@ void Renderer::createWindow(const char* title, int width, int height) {
 	isrunning = true;
 }
 
-void Renderer::renderPosition(int width,int height) {
+void Renderer::renderPositionTop(int width,int height) {
 	int midleMap = width / 2;
 	int midle = midleMap / 2;
 	int midleheight = height / 2;
@@ -31,7 +31,7 @@ void Renderer::renderPosition(int width,int height) {
 	SDL_RenderFillRect(renderer, &position);
 }
 
-void Renderer::drawRectangle(int x, int y, int width, int heigth, SDL_Color color, std::vector<std::vector<int>> map) {
+void Renderer::drawRectangleMap(int x, int y, int width, int heigth, SDL_Color color, std::vector<std::vector<int>> map) {
 	SDL_Rect rect{ x,y,width,heigth };
 	const int gridSize = 80; 
 	SDL_Rect drawWalls{ x,y,80,80 };
@@ -59,6 +59,14 @@ void Renderer::drawRectangle(int x, int y, int width, int heigth, SDL_Color colo
 	}
 }
 
+void Renderer::drawFirsperson(int x, int y, int width, int heigth, SDL_Color color) {
+	SDL_Rect rect = { x,y,width,heigth };
+	float distance = sqrt(pow(laser.x - laser.x, 2) + pow(laser.y - position.y, 2));
+	int maxSize = 100;
+	int minSize = 10;
+	float recheight = maxSize / (distance * 0.05 + 1);
+}
+
 void Renderer::update() {
 	SDL_Event event;
 	while (SDL_PollEvent(&event)) {
@@ -66,8 +74,10 @@ void Renderer::update() {
 			isrunning = false;
 		}
 		if (event.key.keysym.sym == SDLK_w) {
-			position.x += cos(angle) * 5;
-			position.y += sin(angle) * 5;
+			if (!wallCheck(position, mapaux, angle)) {
+				position.x += cos(angle) * 5;
+				position.y += sin(angle) * 5;
+			}
 
 		}
 		if (event.key.keysym.sym == SDLK_a) {
@@ -99,35 +109,61 @@ void Renderer::close() {
 }
 
 void Renderer::DrawLaser(SDL_Rect Position, std::vector<std::vector<int>> map) {
-	float laserX = Position.x;
-	float laserY = Position.y;
-	float stepx = cos(angle) * 0.5;
-	float stepy = sin(angle) * 0.5;
+	mapaux = map;
+
+	int lines = 60;
+
+	float angleStep = (M_PI /2 ) / lines;
+	float startAngle = angle - (M_PI / 6);
+
+	for (int i = 0; i < lines; i++) {
+		float rayAngle = startAngle + (i * angleStep);
+		float laserX = Position.x;
+		float laserY = Position.y;
+		float stepx = cos(rayAngle) * 0.5;
+		float stepy = sin(rayAngle) * 0.5;
+
+		while (true) {
+			int gridX = (int)floor(laserX / 80);;
+			int gridy = (int)floor(laserY / 80);
+
+			if (gridX < 0 || gridy < 0 || gridX >= map.size() || gridy >= map[0].size()) {
+				break;
+			}
 
 
+			if (map[gridy][gridX] == 1) {
 
-	while (true) {
-		int gridX = (int)floor(laserX / 80);;
-		int gridy = (int)floor(laserY / 80);
+				break;
+			}
 
-		if (gridX < 0 || gridy < 0 || gridX >= map.size() || gridy >= map[0].size()) {
-			break;
+			laserX += stepx;
+			laserY += stepy;
+
 		}
-	
-
-		if (map[gridy][gridX] == 1) {
-			std::cout << "parede x " << gridX << " pared y" << gridy << "\n";
-			break;
-		}
-
-		laserX += stepx;
-		laserY += stepy;
+		SDL_RenderDrawLine(renderer, Position.x, position.y, laserX, laserY);
 	}
-	
-	
-		
-	SDL_RenderDrawLine(renderer, Position.x, position.y,laserX, laserY);
-	
 	
 }
 
+bool Renderer::wallCheck(SDL_Rect positions, std::vector<std::vector<int>> map,float angle) {
+	float newx = positions.x += cos(angle) * 5;
+	float newy = positions.y += sin(angle) * 5;
+	
+
+	float minx = newx / 80;
+	float miny = newy/ 80;
+	float maxx = (newx + position.w) / 80;
+	float maxy = (newy + position.h) / 80;
+	for (int a = miny;a <= maxy;a++) {
+		for (int b = minx;b <= maxx;b++) {
+			if (map[a][b] != 0) {
+				return true;
+			}
+		}
+		
+	}
+	
+	return false;
+
+}
